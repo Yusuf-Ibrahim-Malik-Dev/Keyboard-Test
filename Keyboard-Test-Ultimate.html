@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Keyboard Test Ultimate - tes tombol, ghosting/NKRO, dan kecepatan mengetik dalam satu halaman.">
+<title>Keyboard Test Ultimate</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="focusbar">FOKUS AKTIF — semua tombol akan terbaca</div>
+
+  <div id="overlay">
+    <h1>Keyboard Test <span>Ultimate</span></h1>
+    <p>Tes semua tombol, ukur rollover/ghosting, dan cek kecepatan mengetik — langsung di browser, tanpa upload apa pun.</p>
+    <ul>
+      <li>Tes tombol lengkap + progress &amp; heatmap</li>
+      <li>Deteksi ghosting / NKRO (tombol serentak)</li>
+      <li>Ukur WPM &amp; akurasi mengetik</li>
+      <li>Suara klik, tema terang/gelap, ekspor JSON</li>
+    </ul>
+    <button class="go" id="startBtn">MULAI TES</button>
+    <button class="skip" id="skipBtn">Lewati intro</button>
+  </div>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">Keyboard Test <span class="ver">Ultimate</span>
+        <small>v3 · tes tombol • ghosting/NKRO • kecepatan mengetik</small>
+      </div>
+      <div class="toolbar">
+        <label>Layout
+          <select id="layoutSel">
+            <option value="full">Full-size</option>
+            <option value="tkl">TKL (tanpa numpad)</option>
+            <option value="75">75% (tanpa nav &amp; numpad)</option>
+            <option value="60">60% (hanya blok utama)</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="isoChk"> ISO</label>
+        <button class="pill on" id="soundBtn" title="Aktif/nonaktifkan suara klik">Suara: ON</button>
+        <button class="pill" id="themeBtn" title="Ganti tema">Tema: Gelap</button>
+        <button class="pill" id="heatBtn" title="Tampilkan intensitas pemakaian tombol">Heatmap: OFF</button>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button data-tab="keys" class="active">Tes Tombol</button>
+      <button data-tab="ghost">Ghosting / NKRO</button>
+      <button data-tab="type">Kecepatan Mengetik</button>
+    </nav>
+
+    <section class="panel active" id="panel-keys">
+      <div class="progress"><div id="bar"></div></div>
+      <div class="stats">
+        <div class="stat"><div class="lbl">Teruji</div><div class="val" id="sDone">0/0</div></div>
+        <div class="stat"><div class="lbl">Progress</div><div class="val" id="sPct">0%</div></div>
+        <div class="stat"><div class="lbl">Belum</div><div class="val" id="sMiss">0</div></div>
+        <div class="stat"><div class="lbl">Waktu</div><div class="val" id="sTime">0:00</div></div>
+        <div class="stat"><div class="lbl">Total Tekan</div><div class="val" id="sPress">0</div></div>
+        <div class="stat"><div class="lbl">Rekor Serentak</div><div class="val" id="sRoll">0</div></div>
+      </div>
+      <div id="live" aria-live="polite">Menunggu input…</div>
+      <div class="kbd-scroll"><div class="keyboard" id="kbd"></div></div>
+      <div class="btns">
+        <button class="primary" id="check">Cek yang belum terdeteksi</button>
+        <button id="copy">Salin hasil</button>
+        <button id="export">Ekspor JSON</button>
+        <button class="danger" id="reset">Reset</button>
+      </div>
+      <div class="hint">
+        Klik kanan pada tombol untuk menghapus status tombol itu. Tekan <kbd>F5</kbd> / <kbd>Ctrl</kbd>+<kbd>R</kbd> tetap bisa memuat ulang.<br>
+        Tombol sistem (Win, PrintScreen, ScrollLock, Pause, Menu) tidak bisa dibaca browser dan dikecualikan dari hitungan.
+      </div>
+      <div id="log"></div>
+    </section>
+
+    <section class="panel" id="panel-ghost">
+      <div class="ghost-card">
+        <div class="big" id="gNow">0</div>
+        <div class="sub">tombol sedang ditekan bersamaan</div>
+        <div class="chips" id="gChips"><span style="color:var(--dim);font-size:13px">Tahan beberapa tombol sekaligus…</span></div>
+        <div class="meter">
+          <span>Rekor serentak: <b id="gMax">0</b></span>
+          <span>Total event: <b id="gEvents">0</b></span>
+        </div>
+        <div class="hint" style="margin-top:20px">
+          Tekan dan tahan <b>beberapa tombol bersamaan</b> (mis. W + A + S + D + Shift).<br>
+          Jika angka macet di 2–3 atau ada tombol yang “hilang”, keyboard-mu punya keterbatasan rollover / ghosting.<br>
+          <span style="color:var(--warn)">Catatan:</span> browser juga punya batas praktis, jadi rekor &lt; 6 belum tentu masalah hardware.
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-type">
+      <div class="type-card">
+        <div id="typePrompt"></div>
+        <textarea id="typeInput" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Mulai mengetik di sini…"></textarea>
+        <div class="tstats">
+          <span>WPM <b id="tWpm">0</b></span>
+          <span>Akurasi <b id="tAcc">100%</b></span>
+          <span>Karakter <b id="tChar">0</b></span>
+          <span>Waktu <b id="tTime">0s</b></span>
+        </div>
+        <div class="btns"><button id="tReset">Ulangi</button></div>
+      </div>
+    </section>
+
+    <footer>
+      Keyboard Test Ultimate · 100% offline &amp; tanpa dependensi · data disimpan lokal di browser<br>
+      Dibuat untuk diagnosa keyboard harian. Hasil tidak menggantikan alat ukur hardware profesional.
+    </footer>
+  </div>
+
+  <div id="toast"></div>
+  <canvas id="confetti"></canvas>
+
+<script src="script.js" defer></script>
+</body>
+</html>
